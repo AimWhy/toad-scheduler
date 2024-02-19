@@ -9,9 +9,12 @@ function sleep(ms: number) {
 }
 
 describe('ToadScheduler', () => {
+  beforeAll(() => {
+    unMockTimers()
+  })
+
   describe('AsyncTask', () => {
     it('correctly handles async errors', (done) => {
-      unMockTimers()
       expectAssertions(1)
       let error: string
       const scheduler = new ToadScheduler()
@@ -24,14 +27,14 @@ describe('ToadScheduler', () => {
         },
         (err: Error) => {
           error = err.message
-        }
+        },
       )
       const job = new SimpleIntervalJob(
         {
           seconds: 1,
           runImmediately: true,
         },
-        task
+        task,
       )
 
       scheduler.addSimpleIntervalJob(job)
@@ -44,7 +47,6 @@ describe('ToadScheduler', () => {
     })
 
     it('correctly handles async errors with Promise.all', (done) => {
-      unMockTimers()
       expectAssertions(3)
       let error: string
       let result1: boolean
@@ -66,14 +68,14 @@ describe('ToadScheduler', () => {
         },
         (err: Error) => {
           error = err.message
-        }
+        },
       )
       const job = new SimpleIntervalJob(
         {
           seconds: 1,
           runImmediately: true,
         },
-        task
+        task,
       )
 
       scheduler.addSimpleIntervalJob(job)
@@ -88,7 +90,6 @@ describe('ToadScheduler', () => {
     })
 
     it('correctly handles errors asynchronously', (done) => {
-      unMockTimers()
       expectAssertions(1)
       let error: string
       const scheduler = new ToadScheduler()
@@ -106,14 +107,14 @@ describe('ToadScheduler', () => {
             error = err.message
             throw new Error('error while handling error')
           })
-        }
+        },
       )
       const job = new SimpleIntervalJob(
         {
           seconds: 1,
           runImmediately: true,
         },
-        task
+        task,
       )
 
       scheduler.addSimpleIntervalJob(job)
@@ -126,7 +127,6 @@ describe('ToadScheduler', () => {
     })
 
     it('correctly handles async rejections', (done) => {
-      unMockTimers()
       expectAssertions(1)
       let error: string
       const scheduler = new ToadScheduler()
@@ -139,13 +139,13 @@ describe('ToadScheduler', () => {
         },
         (err: Error) => {
           error = err.message
-        }
+        },
       )
       const job = new SimpleIntervalJob(
         {
           milliseconds: 5,
         },
-        task
+        task,
       )
 
       scheduler.addSimpleIntervalJob(job)
@@ -158,7 +158,6 @@ describe('ToadScheduler', () => {
     })
 
     it('correctly provide taskid', (done) => {
-      unMockTimers()
       expectAssertions(1)
 
       const scheduler = new ToadScheduler()
@@ -170,25 +169,24 @@ describe('ToadScheduler', () => {
             return Promise.reject(new Error('kaboom2'))
           })
         },
-        () => {}
+        () => {},
       )
       const job = new SimpleIntervalJob(
         {
           milliseconds: 5,
         },
-        task
+        task,
       )
 
       scheduler.addSimpleIntervalJob(job)
 
-      sleep(10).then(() => {
+      sleep(7).then(() => {
         scheduler.stop()
         done()
       })
     })
 
     it('correctly provide taskid and jobid', (done) => {
-      unMockTimers()
       expectAssertions(2)
 
       const scheduler = new ToadScheduler()
@@ -200,7 +198,7 @@ describe('ToadScheduler', () => {
           Promise.resolve()
           return Promise.reject(new Error('kaboom2'))
         },
-        () => {}
+        () => {},
       )
       const job = new SimpleIntervalJob(
         {
@@ -209,7 +207,7 @@ describe('ToadScheduler', () => {
         task,
         {
           id: 'jobId',
-        }
+        },
       )
 
       scheduler.addSimpleIntervalJob(job)
